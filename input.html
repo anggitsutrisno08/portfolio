@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Admin Panel</h1>
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="downloadAllImages()" class="btn-secondary" style="padding: 0.6rem 1.5rem;">💾 Download All Images</button>
+                <button onclick="exportData()" class="btn-primary" style="padding: 0.6rem 1.5rem;">📥 Export Data</button>
+                <button onclick="document.getElementById('importFile').click()" class="btn-secondary" style="padding: 0.6rem 1.5rem;">📤 Import Data</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                <button id="logoutBtn" class="btn-secondary">Logout</button>
+            </div>
+        </div>
+
+        <div class="admin-content">
+            <div class="admin-card">
+                <h2>Upload Profile Image</h2>
+                <input type="file" id="profileImageInput" accept="image/*">
+                <button onclick="uploadProfileImage()" class="btn-primary">Save Profile Image</button>
+            </div>
+
+            <div class="admin-card">
+                <h2>Upload CV</h2>
+                <input type="file" id="cvInput" accept=".pdf,.doc,.docx">
+                <div id="cvStatus" style="margin-top: 1rem; color: #00ffff;"></div>
+                <button onclick="uploadCV()" class="btn-primary">Save CV</button>
+            </div>
+
+            <div class="admin-card">
+                <h2>Social Media Links</h2>
+                <input type="url" id="facebookLink" placeholder="Facebook URL (https://facebook.com/...)">
+                <input type="url" id="instagramLink" placeholder="Instagram URL (https://instagram.com/...)">
+                <input type="url" id="linkedinLink" placeholder="LinkedIn URL (https://linkedin.com/in/...)">
+                <input type="url" id="githubLink" placeholder="GitHub URL (https://github.com/...)">
+                <button onclick="saveSocialLinks()" class="btn-primary">Save Social Links</button>
+            </div>
+
+            <div class="admin-card">
+                <h2>Contact Information</h2>
+                <input type="email" id="contactEmail" placeholder="Email (anggitsutrisno@gmail.com)">
+                <input type="url" id="contactWhatsapp" placeholder="WhatsApp URL (https://wa.me/62xxx)">
+                <input type="url" id="contactLinkedin" placeholder="LinkedIn URL (https://linkedin.com/in/...)">
+                <button onclick="saveContactInfo()" class="btn-primary">Save Contact Info</button>
+            </div>
+
+            <div class="admin-card">
+                <h2>About Me Description</h2>
+                <textarea id="aboutDescription" placeholder="Write about yourself..." rows="5"></textarea>
+                <button onclick="saveAboutDescription()" class="btn-primary">Save About Description</button>
+            </div>
+
+            <div class="admin-card">
+                <h2>Add Skill</h2>
+                <input type="text" id="skillName" placeholder="Skill Name">
+                <input type="number" id="skillLevel" placeholder="Level (0-100)" min="0" max="100">
+                <button onclick="addSkill()" class="btn-primary">Add Skill</button>
+                <div id="skillsList" class="items-list"></div>
+            </div>
+
+            <div class="admin-card">
+                <h2>Add Experience</h2>
+                <input type="text" id="expCompany" placeholder="Company">
+                <input type="text" id="expRole" placeholder="Role">
+                <input type="text" id="expDate" placeholder="Date">
+                <textarea id="expDescription" placeholder="Description" rows="3"></textarea>
+                <button onclick="addExperience()" class="btn-primary">Add Experience</button>
+                <div id="experiencesList" class="items-list"></div>
+            </div>
+
+            <div class="admin-card">
+                <h2>Add Project</h2>
+                <input type="text" id="projectTitle" placeholder="Title">
+                <textarea id="projectDescription" placeholder="Description" rows="3"></textarea>
+                <input type="text" id="projectTech" placeholder="Technologies (comma separated)">
+                <input type="file" id="projectImages" accept="image/*" multiple>
+                <div id="imagePreview" class="image-preview"></div>
+                <button onclick="addProject()" class="btn-primary">Add Project</button>
+                <div id="projectsList" class="items-list"></div>
+            </div>
+
+            <div class="admin-card">
+                <h2>Add Certificate</h2>
+                <input type="text" id="certName" placeholder="Certificate Name">
+                <input type="text" id="certIssuer" placeholder="Issuer">
+                <input type="text" id="certYear" placeholder="Year">
+                <textarea id="certDescription" placeholder="Description (optional)" rows="3"></textarea>
+                <input type="file" id="certImage" accept="image/*">
+                <button onclick="addCertificate()" class="btn-primary">Add Certificate</button>
+                <div id="certificatesList" class="items-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if (localStorage.getItem('isLogin') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('isLogin');
+            window.location.href = 'login.html';
+        });
+
+        function uploadProfileImage() {
+            const input = document.getElementById('profileImageInput');
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    localStorage.setItem('profileImage', e.target.result);
+                    alert('Profile image saved to localStorage!\n\nTip: Click "💾 Download Images" to save images to assets folder.');
+                    
+                    // Auto-download image to save manually
+                    downloadImage(e.target.result, `profile-${Date.now()}.${file.name.split('.').pop()}`, 'profile');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function uploadCV() {
+            const input = document.getElementById('cvInput');
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const cvData = {
+                        name: file.name,
+                        type: file.type,
+                        data: e.target.result
+                    };
+                    localStorage.setItem('cv', JSON.stringify(cvData));
+                    alert('CV saved successfully!');
+                    displayCVStatus();
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                alert('Please select a CV file');
+            }
+        }
+
+        function displayCVStatus() {
+            const cv = localStorage.getItem('cv');
+            const statusDiv = document.getElementById('cvStatus');
+            if (cv) {
+                const cvData = JSON.parse(cv);
+                statusDiv.innerHTML = `<strong>Current CV:</strong> ${cvData.name}`;
+            } else {
+                statusDiv.innerHTML = 'No CV uploaded yet';
+            }
+        }
+
+        displayCVStatus();
+
+        function saveSocialLinks() {
+            const socialLinks = {
+                facebook: document.getElementById('facebookLink').value,
+                instagram: document.getElementById('instagramLink').value,
+                linkedin: document.getElementById('linkedinLink').value,
+                github: document.getElementById('githubLink').value
+            };
+            
+            localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
+            alert('Social media links saved!');
+        }
+
+        function loadSocialLinks() {
+            const socialLinks = JSON.parse(localStorage.getItem('socialLinks') || '{}');
+            document.getElementById('facebookLink').value = socialLinks.facebook || '';
+            document.getElementById('instagramLink').value = socialLinks.instagram || '';
+            document.getElementById('linkedinLink').value = socialLinks.linkedin || '';
+            document.getElementById('githubLink').value = socialLinks.github || '';
+        }
+
+        loadSocialLinks();
+
+        function saveContactInfo() {
+            const contactInfo = {
+                email: document.getElementById('contactEmail').value,
+                whatsapp: document.getElementById('contactWhatsapp').value,
+                linkedinContact: document.getElementById('contactLinkedin').value
+            };
+            
+            localStorage.setItem('contactInfo', JSON.stringify(contactInfo));
+            alert('Contact information saved!');
+        }
+
+        function loadContactInfo() {
+            const contactInfo = JSON.parse(localStorage.getItem('contactInfo') || '{}');
+            document.getElementById('contactEmail').value = contactInfo.email || '';
+            document.getElementById('contactWhatsapp').value = contactInfo.whatsapp || '';
+            document.getElementById('contactLinkedin').value = contactInfo.linkedinContact || '';
+        }
+
+        function loadAboutDescription() {
+            const aboutDescription = localStorage.getItem('aboutDescription') || '';
+            document.getElementById('aboutDescription').value = aboutDescription;
+        }
+
+        function saveAboutDescription() {
+            const description = document.getElementById('aboutDescription').value;
+            localStorage.setItem('aboutDescription', description);
+            alert('About description saved!');
+        }
+
+        loadContactInfo();
+        loadAboutDescription();
+
+        function addSkill() {
+            const name = document.getElementById('skillName').value;
+            const level = document.getElementById('skillLevel').value;
+            if (!name || !level) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            let skills = JSON.parse(localStorage.getItem('skills') || '[]');
+            skills.push({ name, level: parseInt(level) });
+            localStorage.setItem('skills', JSON.stringify(skills));
+            
+            document.getElementById('skillName').value = '';
+            document.getElementById('skillLevel').value = '';
+            loadSkills();
+            alert('Skill added!');
+        }
+
+        function loadSkills() {
+            const skills = JSON.parse(localStorage.getItem('skills') || '[]');
+            const container = document.getElementById('skillsList');
+            container.innerHTML = skills.map((skill, index) => 
+                `<div class="item">${skill.name} - ${skill.level}% <button onclick="deleteSkill(${index})">Delete</button></div>`
+            ).join('');
+        }
+
+        function deleteSkill(index) {
+            let skills = JSON.parse(localStorage.getItem('skills') || '[]');
+            skills.splice(index, 1);
+            localStorage.setItem('skills', JSON.stringify(skills));
+            loadSkills();
+        }
+
+        function addExperience() {
+            const company = document.getElementById('expCompany').value;
+            const role = document.getElementById('expRole').value;
+            const date = document.getElementById('expDate').value;
+            const description = document.getElementById('expDescription').value;
+            
+            if (!company || !role || !date || !description) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            let experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+            experiences.push({ company, role, date, description });
+            localStorage.setItem('experiences', JSON.stringify(experiences));
+            
+            document.getElementById('expCompany').value = '';
+            document.getElementById('expRole').value = '';
+            document.getElementById('expDate').value = '';
+            document.getElementById('expDescription').value = '';
+            loadExperiences();
+            alert('Experience added!');
+        }
+
+        function loadExperiences() {
+            const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+            const container = document.getElementById('experiencesList');
+            container.innerHTML = experiences.map((exp, index) => 
+                `<div class="item">${exp.role} at ${exp.company} <button onclick="deleteExperience(${index})">Delete</button></div>`
+            ).join('');
+        }
+
+        function deleteExperience(index) {
+            let experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+            experiences.splice(index, 1);
+            localStorage.setItem('experiences', JSON.stringify(experiences));
+            loadExperiences();
+        }
+
+        function addProject() {
+            const title = document.getElementById('projectTitle').value;
+            const description = document.getElementById('projectDescription').value;
+            const tech = document.getElementById('projectTech').value;
+            const imagesInput = document.getElementById('projectImages');
+            
+            if (!title || !description || !tech) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            const images = [];
+            const files = imagesInput.files;
+            
+            if (files.length === 0) {
+                alert('Please select at least one image');
+                return;
+            }
+
+            let processed = 0;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    images.push(e.target.result);
+                    
+                    // Auto-download each project image
+                    const filename = `${title.toLowerCase().replace(/\s+/g, '-')}-${i + 1}.${file.name.split('.').pop()}`;
+                    downloadImage(e.target.result, filename, 'projects');
+                    
+                    processed++;
+                    
+                    if (processed === files.length) {
+                        let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+                        projects.push({ title, description, tech, images });
+                        localStorage.setItem('projects', JSON.stringify(projects));
+                        
+                        document.getElementById('projectTitle').value = '';
+                        document.getElementById('projectDescription').value = '';
+                        document.getElementById('projectTech').value = '';
+                        document.getElementById('projectImages').value = '';
+                        document.getElementById('imagePreview').innerHTML = '';
+                        loadProjects();
+                        alert('Project added!\n\nImages downloaded. Please save them to:\nassets/images/projects/');
+                    }
+                };
+                reader.readAsDataURL(files[i]);
+            }
+        }
+
+        document.getElementById('projectImages').addEventListener('change', function(e) {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            const files = e.target.files;
+            
+            for (let i = 0; i < files.length; i++) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.style.width = '100px';
+                    img.style.height = '100px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '10px';
+                    img.style.border = '2px solid #00ffff';
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(files[i]);
+            }
+        });
+
+        function loadProjects() {
+            const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            const container = document.getElementById('projectsList');
+            container.innerHTML = projects.map((project, index) => 
+                `<div class="item">${project.title} (${project.images.length} images) <button onclick="deleteProject(${index})">Delete</button></div>`
+            ).join('');
+        }
+
+        function deleteProject(index) {
+            let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            projects.splice(index, 1);
+            localStorage.setItem('projects', JSON.stringify(projects));
+            loadProjects();
+        }
+
+        function addCertificate() {
+            const name = document.getElementById('certName').value;
+            const issuer = document.getElementById('certIssuer').value;
+            const year = document.getElementById('certYear').value;
+            const description = document.getElementById('certDescription').value;
+            const imageInput = document.getElementById('certImage');
+            
+            if (!name || !issuer || !year || !imageInput.files[0]) {
+                alert('Please fill all required fields and select an image');
+                return;
+            }
+
+            const file = imageInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let certificates = JSON.parse(localStorage.getItem('certificates') || '[]');
+                certificates.push({ name, issuer, year, description, image: e.target.result });
+                localStorage.setItem('certificates', JSON.stringify(certificates));
+                
+                // Auto-download certificate image
+                const filename = `cert-${name.toLowerCase().replace(/\s+/g, '-')}-${year}.${file.name.split('.').pop()}`;
+                downloadImage(e.target.result, filename, 'certificates');
+                
+                document.getElementById('certName').value = '';
+                document.getElementById('certIssuer').value = '';
+                document.getElementById('certYear').value = '';
+                document.getElementById('certDescription').value = '';
+                document.getElementById('certImage').value = '';
+                loadCertificates();
+                alert('Certificate added!\n\nImage downloaded. Please save to:\nassets/images/certificates/');
+            };
+            reader.readAsDataURL(imageInput.files[0]);
+        }
+        
+        // Helper function to download images
+        function downloadImage(base64Data, filename, folder) {
+            const link = document.createElement('a');
+            link.href = base64Data;
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            console.log(`📥 Downloaded: ${filename} → Save to: assets/images/${folder}/`);
+        }
+        
+        // Function to download all images at once
+        function downloadAllImages() {
+            let downloadCount = 0;
+            
+            // Download profile image
+            const profileImage = localStorage.getItem('profileImage');
+            if (profileImage) {
+                downloadImage(profileImage, 'profile.jpg', 'profile');
+                downloadCount++;
+            }
+            
+            // Download project images
+            const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            projects.forEach((project, pIndex) => {
+                project.images.forEach((img, iIndex) => {
+                    const filename = `${project.title.toLowerCase().replace(/\s+/g, '-')}-${iIndex + 1}.jpg`;
+                    downloadImage(img, filename, 'projects');
+                    downloadCount++;
+                });
+            });
+            
+            // Download certificate images
+            const certificates = JSON.parse(localStorage.getItem('certificates') || '[]');
+            certificates.forEach((cert, index) => {
+                const filename = `cert-${cert.name.toLowerCase().replace(/\s+/g, '-')}-${cert.year}.jpg`;
+                downloadImage(cert.image, filename, 'certificates');
+                downloadCount++;
+            });
+            
+            if (downloadCount > 0) {
+                alert(`📥 Downloading ${downloadCount} images...\n\nPlease save them to the correct folders:\n- assets/images/profile/\n- assets/images/projects/\n- assets/images/certificates/`);
+            } else {
+                alert('No images to download. Please add some content first.');
+            }
+        }
+
+        function loadCertificates() {
+            const certificates = JSON.parse(localStorage.getItem('certificates') || '[]');
+            const container = document.getElementById('certificatesList');
+            container.innerHTML = certificates.map((cert, index) => 
+                `<div class="item">${cert.name} - ${cert.year} <button onclick="deleteCertificate(${index})">Delete</button></div>`
+            ).join('');
+        }
+
+        function deleteCertificate(index) {
+            let certificates = JSON.parse(localStorage.getItem('certificates') || '[]');
+            certificates.splice(index, 1);
+            localStorage.setItem('certificates', JSON.stringify(certificates));
+            loadCertificates();
+        }
+
+        function loadContacts() {
+            const contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
+            const container = document.getElementById('contactsList');
+            
+            if (contacts.length === 0) {
+                container.innerHTML = '<p style="color: #64748b;">No messages yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = contacts.map((contact, index) => `
+                <div class="contact-item">
+                    <div class="contact-header">
+                        <strong>${contact.name}</strong>
+                        <span style="color: #64748b; font-size: 0.85rem;">${contact.date}</span>
+                    </div>
+                    <div style="color: #00ffff; font-size: 0.9rem; margin: 0.3rem 0;">${contact.email}</div>
+                    <div style="color: #cbd5e1; font-weight: bold; margin: 0.3rem 0;">${contact.subject}</div>
+                    <div style="color: #cbd5e1; margin: 0.5rem 0;">${contact.message}</div>
+                    <button onclick="deleteContact(${index})" style="background: #ef4444; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 10px; cursor: pointer; margin-top: 0.5rem;">Delete</button>
+                </div>
+            `).reverse().join('');
+        }
+
+        function deleteContact(index) {
+            let contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
+            const actualIndex = contacts.length - 1 - index;
+            contacts.splice(actualIndex, 1);
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+            loadContacts();
+        }
+
+        function clearAllContacts() {
+            if (confirm('Are you sure you want to delete all messages?')) {
+                localStorage.removeItem('contacts');
+                loadContacts();
+                alert('All messages deleted!');
+            }
+        }
+
+        loadSkills();
+        loadExperiences();
+        loadProjects();
+        loadCertificates();
+        
+        function exportData() {
+            const data = {
+                profileImage: localStorage.getItem('profileImage'),
+                cv: localStorage.getItem('cv'),
+                socialLinks: localStorage.getItem('socialLinks'),
+                contactInfo: localStorage.getItem('contactInfo'),
+                aboutDescription: localStorage.getItem('aboutDescription'),
+                skills: localStorage.getItem('skills'),
+                experiences: localStorage.getItem('experiences'),
+                projects: localStorage.getItem('projects'),
+                certificates: localStorage.getItem('certificates'),
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `portfolio-data-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('Data exported successfully! Save this file to GitHub for backup.');
+        }
+        
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Continue?')) {
+                        if (data.profileImage) localStorage.setItem('profileImage', data.profileImage);
+                        if (data.cv) localStorage.setItem('cv', data.cv);
+                        if (data.socialLinks) localStorage.setItem('socialLinks', data.socialLinks);
+                        if (data.contactInfo) localStorage.setItem('contactInfo', data.contactInfo);
+                        if (data.aboutDescription) localStorage.setItem('aboutDescription', data.aboutDescription);
+                        if (data.skills) localStorage.setItem('skills', data.skills);
+                        if (data.experiences) localStorage.setItem('experiences', data.experiences);
+                        if (data.projects) localStorage.setItem('projects', data.projects);
+                        if (data.certificates) localStorage.setItem('certificates', data.certificates);
+                        
+                        alert('Data imported successfully! Reloading page...');
+                        location.reload();
+                    }
+                } catch (error) {
+                    alert('Error importing data: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            event.target.value = '';
+        }
+    </script>
+</body>
+</html>

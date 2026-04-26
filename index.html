@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anggit Sutrisno - Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="scroll-progress"></div>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Portfolio</div>
+            <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
+                <span class="theme-icon">🌙</span>
+            </button>
+            <button class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#experience" class="nav-link">Experience</a></li>
+                <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
+                <li><a href="#certificate" class="nav-link">Certificate</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="main-container">
+        <div class="left-column">
+            <section id="home" class="hero-section">
+                <div class="hero-content">
+                    <h3>Hello, It's Me</h3>
+                    <h1>Anggit Sutrisno</h1>
+                    <h2>And I'm <span class="typing-text"></span></h2>
+                    
+                    <div class="stats-container">
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="0" id="projectsCount">0</div>
+                            <div class="stat-label">Projects</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="0" id="skillsCount">0</div>
+                            <div class="stat-label">Skills</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="0" id="certificatesCount">0</div>
+                            <div class="stat-label">Certificates</div>
+                        </div>
+                    </div>
+                    
+                    <div class="social-icons" id="socialIcons">
+                        <a href="#" class="social-icon" id="facebookIcon"><i>FB</i></a>
+                        <a href="#" class="social-icon" id="instagramIcon"><i>IG</i></a>
+                        <a href="#" class="social-icon" id="linkedinIcon"><i>IN</i></a>
+                        <a href="#" class="social-icon" id="githubIcon"><i>GH</i></a>
+                    </div>
+                    <div class="hero-buttons">
+                        <button class="btn-primary" onclick="downloadCV()">Download CV</button>
+                        <button class="btn-secondary" onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})">Contact Me</button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="hexagon-image">
+                        <img id="heroProfileImage" src="" alt="Profile">
+                    </div>
+                </div>
+            </section>
+
+            <section id="about" class="about-section">
+                <div class="card">
+                    <h2 class="section-title">About Me</h2>
+                    <div class="about-content">
+                        <div class="about-image">
+                            <div class="hexagon-image">
+                                <img id="aboutProfileImage" src="" alt="Profile">
+                            </div>
+                        </div>
+                        <div class="about-text">
+                            <p id="aboutDescription">I am an Informatics Engineering Student passionate about web development and software engineering. I love creating innovative solutions and learning new technologies.</p>
+                            <button class="btn-primary">Read More</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="right-column">
+            <section id="skills" class="skills-section">
+                <div class="card">
+                    <h2 class="section-title">Skills</h2>
+                    <input type="text" id="skillsSearch" class="search-input" placeholder="🔍 Search skills...">
+                    <div id="skillsContainer" class="skills-container">
+                        <div class="skeleton-loader">
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="experience" class="experience-section">
+                <div class="card">
+                    <h2 class="section-title">Experience</h2>
+                    <input type="text" id="experienceSearch" class="search-input" placeholder="🔍 Search experience...">
+                    <div id="experienceContainer" class="experience-container">
+                        <div class="skeleton-loader">
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="portfolio" class="portfolio-section">
+                <div class="card">
+                    <h2 class="section-title">Portfolio</h2>
+                    
+                    <div class="portfolio-controls">
+                        <input type="text" id="portfolioSearch" class="search-input" placeholder="🔍 Search projects...">
+                        <div class="filter-buttons" id="filterButtons">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                        </div>
+                    </div>
+                    
+                    <div id="portfolioContainer" class="portfolio-container">
+                        <div class="skeleton-loader">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="portfolioModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-modal">&times;</span>
+                        <div class="modal-images">
+                            <button class="modal-nav prev">&lt;</button>
+                            <img id="modalImage" src="" alt="">
+                            <button class="modal-nav next">&gt;</button>
+                        </div>
+                        <div class="modal-info">
+                            <h2 id="modalTitle"></h2>
+                            <p id="modalDescription"></p>
+                            <div id="modalTech"></div>
+                        </div>
+                        <div class="modal-thumbnails" id="modalThumbnails"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="certificate" class="certificate-section">
+                <div class="card">
+                    <h2 class="section-title">Certificates</h2>
+                    <div id="certificateContainer" class="certificate-container">
+                        <div class="skeleton-loader">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="certificateModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-modal" onclick="document.getElementById('certificateModal').style.display='none'">&times;</span>
+                        <div class="certificate-modal-image">
+                            <button class="modal-nav prev" id="certPrevBtn">&lt;</button>
+                            <img id="certModalImage" src="" alt="Certificate">
+                            <button class="modal-nav next" id="certNextBtn">&gt;</button>
+                        </div>
+                        <div class="modal-info">
+                            <h2 id="certModalName"></h2>
+                            <p><strong>Issued by:</strong> <span id="certModalIssuer"></span></p>
+                            <p><strong>Year:</strong> <span id="certModalYear"></span></p>
+                            <p id="certModalDescription" style="color: var(--text-secondary); line-height: 1.6; margin-top: 1rem;"></p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">
+                                <span id="certModalCounter"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact" class="contact-section">
+                <div class="card">
+                    <h2 class="section-title">Contact Me</h2>
+                    <div class="contact-info">
+                        <div class="contact-item-info" id="emailContact">
+                            <div class="contact-icon">📧</div>
+                            <div class="contact-details">
+                                <h3>Email</h3>
+                                <a href="#" id="emailLink">-</a>
+                            </div>
+                        </div>
+                        <div class="contact-item-info" id="whatsappContact">
+                            <div class="contact-icon">💬</div>
+                            <div class="contact-details">
+                                <h3>WhatsApp</h3>
+                                <a href="#" id="whatsappLink" target="_blank">-</a>
+                            </div>
+                        </div>
+                        <div class="contact-item-info" id="linkedinContact">
+                            <div class="contact-icon">💼</div>
+                            <div class="contact-details">
+                                <h3>LinkedIn</h3>
+                                <a href="#" id="linkedinContactLink" target="_blank">-</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

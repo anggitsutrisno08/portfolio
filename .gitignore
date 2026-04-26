@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Optional: Uncomment if you want to ignore uploaded images
+# (Keep them in localStorage only, not in Git)
+# assets/images/profile/*
+# assets/images/projects/*
+# assets/images/certificates/*
+# assets/cv/*
+
+# But keep the .gitkeep files
+!assets/images/profile/.gitkeep
+!assets/images/projects/.gitkeep
+!assets/images/certificates/.gitkeep
+!assets/cv/.gitkeep

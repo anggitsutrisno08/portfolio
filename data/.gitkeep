@@ -1,0 +1,13 @@
+# Portfolio Data Backup Folder
+
+Store your exported JSON files here for backup.
+
+## How to use:
+1. Export data from admin panel
+2. Save the JSON file to this folder
+3. Commit and push to GitHub
+4. To restore: Import the JSON file from admin panel
+
+## File naming convention:
+- portfolio-data-YYYY-MM-DD.json
+- Example: portfolio-data-2024-01-15.json
