@@ -3,11 +3,30 @@
 function loadProfileImage() {
     const profileImage = localStorage.getItem('profileImage');
     if (profileImage) {
+        // Jika ada di localStorage, gunakan itu
         document.getElementById('heroProfileImage').src = profileImage;
         document.getElementById('aboutProfileImage').src = profileImage;
     } else {
-        document.getElementById('heroProfileImage').src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="250" height="250"%3E%3Crect fill="%230f172a" width="250" height="250"/%3E%3Ctext fill="%2300ffff" font-size="24" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EProfile%3C/text%3E%3C/svg%3E';
-        document.getElementById('aboutProfileImage').src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%230f172a" width="200" height="200"/%3E%3Ctext fill="%2300ffff" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EProfile%3C/text%3E%3C/svg%3E';
+        // Jika tidak ada di localStorage, coba load dari file
+        const fileImage = 'assets/images/profile/foto_profil.jpeg';
+        
+        // Test jika file exists
+        fetch(fileImage)
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('heroProfileImage').src = fileImage;
+                    document.getElementById('aboutProfileImage').src = fileImage;
+                } else {
+                    // Jika file tidak ada, gunakan placeholder
+                    document.getElementById('heroProfileImage').src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="250" height="250"%3E%3Crect fill="%230f172a" width="250" height="250"/%3E%3Ctext fill="%2300ffff" font-size="24" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EProfile%3C/text%3E%3C/svg%3E';
+                    document.getElementById('aboutProfileImage').src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%230f172a" width="200" height="200"/%3E%3Ctext fill="%2300ffff" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EProfile%3C/text%3E%3C/svg%3E';
+                }
+            })
+            .catch(() => {
+                // Jika error, gunakan placeholder
+                document.getElementById('heroProfileImage').src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="250" height="250"%3E%3Crect fill="%230f172a" width="250" height="250"/%3E%3Ctext fill="%2300ffff" font-size="24" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EProfile%3C/text%3E%3C/svg%3E';
+                document.getElementById('aboutProfileImage').src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%230f172a" width="200" height="200"/%3E%3Ctext fill="%2300ffff" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EProfile%3C/text%3E%3C/svg%3E';
+            });
     }
     
     const aboutDescription = localStorage.getItem('aboutDescription');
@@ -17,24 +36,87 @@ function loadProfileImage() {
 }
 
 function loadSkills() {
-    const skills = JSON.parse(localStorage.getItem('skills') || '[]');
+    let skills = JSON.parse(localStorage.getItem('skills') || '[]');
+    
+    // Jika localStorage kosong, gunakan data default dengan kategori
+    if (skills.length === 0) {
+        skills = [
+            // Programming
+            { name: 'Python', level: 60, category: 'Programming', icon: '🐍' },
+            { name: 'MySQL', level: 70, category: 'Programming', icon: '🗄' },
+            { name: 'HTML', level: 85, category: 'Programming', icon: '🌐' },
+            { name: 'CSS', level: 80, category: 'Programming', icon: '🎨' },
+            { name: 'JavaScript', level: 75, category: 'Programming', icon: '⚡' },
+            
+            // System & Tools
+            { name: 'SAP System', level: 75, category: 'System & Tools', icon: '💼' },
+            { name: 'Microsoft Excel', level: 80, category: 'System & Tools', icon: '📊' },
+            
+            // Technical
+            { name: 'Troubleshooting', level: 75, category: 'Technical', icon: '🛠' },
+            { name: 'Data Management', level: 85, category: 'Technical', icon: '📁' },
+            
+            // Soft Skills
+            { name: 'Problem Solving', level: 80, category: 'Soft Skills', icon: '🧠' },
+            { name: 'Teamwork', level: 85, category: 'Soft Skills', icon: '🤝' },
+            { name: 'Communication', level: 80, category: 'Soft Skills', icon: '💬' }
+        ];
+        
+        // Simpan ke localStorage agar bisa diedit nanti
+        localStorage.setItem('skills', JSON.stringify(skills));
+    }
+    
+    const container = document.getElementById('skillsContainer');
+    window.allSkills = skills;
+    displaySkillsByCategory(skills);
+}
+
+function displaySkillsByCategory(skills) {
     const container = document.getElementById('skillsContainer');
     
-    if (skills.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-muted);">No skills added yet.</p>';
-        return;
-    }
-
-    window.allSkills = skills;
-    displaySkills(skills);
+    // Group skills by category
+    const categories = {};
+    skills.forEach(skill => {
+        const cat = skill.category || 'Other';
+        if (!categories[cat]) {
+            categories[cat] = [];
+        }
+        categories[cat].push(skill);
+    });
+    
+    // Display skills by category
+    let html = '';
+    Object.keys(categories).forEach((category, catIndex) => {
+        html += `
+            <div class="skill-category" style="animation-delay: ${catIndex * 0.1}s">
+                <h3 class="category-title">${category}</h3>
+                <div class="skills-grid">
+                    ${categories[category].map((skill, index) => `
+                        <div class="skill-item" style="animation-delay: ${(catIndex * 0.1) + (index * 0.05)}s">
+                            <div class="skill-name">
+                                <span>${skill.icon || ''} ${skill.name}</span>
+                                <span>${skill.level}%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: ${skill.level}%"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
 }
 
 function displaySkills(skills) {
+    // Fallback untuk skills tanpa kategori (backward compatibility)
     const container = document.getElementById('skillsContainer');
     container.innerHTML = skills.map((skill, index) => `
         <div class="skill-item" style="animation-delay: ${index * 0.1}s">
             <div class="skill-name">
-                <span>${skill.name}</span>
+                <span>${skill.icon || ''} ${skill.name}</span>
                 <span>${skill.level}%</span>
             </div>
             <div class="skill-bar">
@@ -45,14 +127,42 @@ function displaySkills(skills) {
 }
 
 function loadExperiences() {
-    const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
-    const container = document.getElementById('experienceContainer');
+    let experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
     
+    // Jika localStorage kosong, gunakan data default
     if (experiences.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-muted);">No experiences added yet.</p>';
-        return;
+        experiences = [
+            {
+                company: 'PT Capella Dinamik Nusantara',
+                role: 'Custodian – Finance Department',
+                date: 'Mar 2024 – Mar 2026',
+                description: `• Mengelola dan memvalidasi data kendaraan dalam sistem administrasi
+• Melakukan input, verifikasi, dan pengolahan data secara terstruktur
+• Menangani administrasi faktur berbasis data
+• Memastikan akurasi data dan pelaporan
+• Berkoordinasi dengan dealer & stakeholder
+• Menyusun laporan data (harian & bulanan)`
+            },
+            {
+                company: 'PT Shimano Batam',
+                role: 'Recorder / Clerk / Data Entry',
+                date: 'Aug 2020 – Feb 2022',
+                description: `• Mengoperasikan sistem SAP dan barcode produksi untuk memastikan akurasi data
+• Mengelola dan memverifikasi data produksi dari berbagai departemen
+• Melakukan troubleshooting perangkat (PC & printer) untuk menjaga operasional tetap berjalan
+• Mengawasi proses material handling
+• Mengelola transaksi pesanan dari subkontraktor
+• Memberikan dukungan teknis ke tim IT
+• Berkolaborasi dalam pengembangan & perbaikan sistem
+• Menyusun laporan inventori (bulanan & tahunan)`
+            }
+        ];
+        
+        // Simpan ke localStorage agar bisa diedit nanti
+        localStorage.setItem('experiences', JSON.stringify(experiences));
     }
-
+    
+    const container = document.getElementById('experienceContainer');
     window.allExperiences = experiences;
     displayExperiences(experiences);
 }
@@ -70,14 +180,26 @@ function displayExperiences(experiences) {
 }
 
 function loadProjects() {
-    const projects = JSON.parse(localStorage.getItem('projects') || '[]');
-    const container = document.getElementById('portfolioContainer');
+    let projects = JSON.parse(localStorage.getItem('projects') || '[]');
     
+    // Jika localStorage kosong, gunakan data default
     if (projects.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-muted);">No projects added yet.</p>';
-        return;
+        projects = [
+            {
+                title: 'Bartagx',
+                description: 'Project Bartagx - Deskripsi project akan ditambahkan',
+                tech: 'HTML, CSS, JavaScript',
+                images: [
+                    'assets/images/projects/bartagx-1.jpg',
+                    'assets/images/projects/bartagx-2.jpg',
+                    'assets/images/projects/bartagx-3.jpg'
+                ]
+            }
+        ];
+        localStorage.setItem('projects', JSON.stringify(projects));
     }
-
+    
+    const container = document.getElementById('portfolioContainer');
     window.allProjects = projects;
     
     const allTechs = new Set();
@@ -507,7 +629,17 @@ function downloadCV() {
 }
 
 function loadContactInfo() {
-    const contactInfo = JSON.parse(localStorage.getItem('contactInfo') || '{}');
+    let contactInfo = JSON.parse(localStorage.getItem('contactInfo') || '{}');
+    
+    // Jika localStorage kosong, gunakan data default
+    if (Object.keys(contactInfo).length === 0) {
+        contactInfo = {
+            email: 'anggitsutrisno9@gmail.com',
+            whatsapp: 'https://wa.me/6289517615929',
+            linkedinContact: 'https://www.linkedin.com/in/anggit-sutrisno-4b9552280'
+        };
+        localStorage.setItem('contactInfo', JSON.stringify(contactInfo));
+    }
     
     const emailLink = document.getElementById('emailLink');
     const whatsappLink = document.getElementById('whatsappLink');
@@ -539,7 +671,18 @@ function loadContactInfo() {
 }
 
 function loadSocialLinks() {
-    const socialLinks = JSON.parse(localStorage.getItem('socialLinks') || '{}');
+    let socialLinks = JSON.parse(localStorage.getItem('socialLinks') || '{}');
+    
+    // Jika localStorage kosong, gunakan data default
+    if (Object.keys(socialLinks).length === 0) {
+        socialLinks = {
+            linkedin: 'https://www.linkedin.com/in/anggit-sutrisno-4b9552280',
+            facebook: 'https://www.facebook.com/share/1Dh9MNLMGh/',
+            instagram: 'https://www.instagram.com/anggitts__',
+            github: ''
+        };
+        localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
+    }
     
     const facebookIcon = document.getElementById('facebookIcon');
     const instagramIcon = document.getElementById('instagramIcon');

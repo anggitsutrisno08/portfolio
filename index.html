@@ -221,6 +221,117 @@
         </div>
     </div>
 
+    <script>
+        // Auto-setup portfolio data on first load
+        (function() {
+            // Check if data already exists
+            const hasData = localStorage.getItem('portfolioSetup');
+            
+            if (!hasData) {
+                // Setup Skills
+                const skills = [
+                    { name: 'Python', level: 60, category: 'Programming', icon: '🐍' },
+                    { name: 'MySQL', level: 70, category: 'Programming', icon: '🗄' },
+                    { name: 'HTML', level: 85, category: 'Programming', icon: '🌐' },
+                    { name: 'CSS', level: 80, category: 'Programming', icon: '🎨' },
+                    { name: 'JavaScript', level: 75, category: 'Programming', icon: '⚡' },
+                    { name: 'SAP System', level: 75, category: 'System & Tools', icon: '💼' },
+                    { name: 'Microsoft Excel', level: 80, category: 'System & Tools', icon: '📊' },
+                    { name: 'Troubleshooting', level: 75, category: 'Technical', icon: '🛠' },
+                    { name: 'Data Management', level: 85, category: 'Technical', icon: '📁' },
+                    { name: 'Problem Solving', level: 80, category: 'Soft Skills', icon: '🧠' },
+                    { name: 'Teamwork', level: 85, category: 'Soft Skills', icon: '🤝' },
+                    { name: 'Communication', level: 80, category: 'Soft Skills', icon: '💬' }
+                ];
+                
+                // Setup Experience
+                const experiences = [
+                    {
+                        company: 'PT Capella Dinamik Nusantara',
+                        role: 'Custodian – Finance Department',
+                        date: 'Mar 2024 – Mar 2026',
+                        description: `• Mengelola dan memvalidasi data kendaraan dalam sistem administrasi
+• Melakukan input, verifikasi, dan pengolahan data secara terstruktur
+• Menangani administrasi faktur berbasis data
+• Memastikan akurasi data dan pelaporan
+• Berkoordinasi dengan dealer & stakeholder
+• Menyusun laporan data (harian & bulanan)`
+                    },
+                    {
+                        company: 'PT Shimano Batam',
+                        role: 'Recorder / Clerk / Data Entry',
+                        date: 'Aug 2020 – Feb 2022',
+                        description: `• Mengoperasikan sistem SAP dan barcode produksi untuk memastikan akurasi data
+• Mengelola dan memverifikasi data produksi dari berbagai departemen
+• Melakukan troubleshooting perangkat (PC & printer) untuk menjaga operasional tetap berjalan
+• Mengawasi proses material handling
+• Mengelola transaksi pesanan dari subkontraktor
+• Memberikan dukungan teknis ke tim IT
+• Berkolaborasi dalam pengembangan & perbaikan sistem
+• Menyusun laporan inventori (bulanan & tahunan)`
+                    }
+                ];
+                
+                // Setup Social Links
+                const socialLinks = {
+                    linkedin: 'https://www.linkedin.com/in/anggit-sutrisno-4b9552280',
+                    facebook: 'https://www.facebook.com/share/1Dh9MNLMGh/',
+                    instagram: 'https://www.instagram.com/anggitts__',
+                    github: ''
+                };
+                
+                // Setup Contact Info
+                const contactInfo = {
+                    email: 'anggitsutrisno9@gmail.com',
+                    whatsapp: 'https://wa.me/6289517615929',
+                    linkedinContact: 'https://www.linkedin.com/in/anggit-sutrisno-4b9552280'
+                };
+                
+                // Setup Projects
+                const projects = [
+                    {
+                        title: 'Bartagx',
+                        description: 'Project Bartagx - Deskripsi project akan ditambahkan',
+                        tech: 'HTML, CSS, JavaScript',
+                        images: [
+                            'assets/images/projects/bartagx-1.jpg',
+                            'assets/images/projects/bartagx-2.jpg',
+                            'assets/images/projects/bartagx-3.jpg'
+                        ]
+                    }
+                ];
+                
+                // Setup Certificates
+                const certificates = [
+                    {
+                        name: 'CCNA: Switching, Routing, and Wireless Essentials',
+                        issuer: 'Cisco Networking Academy (Universitas Putera Batam)',
+                        year: '2025',
+                        description: 'Mempelajari dasar jaringan komputer, konfigurasi switching dan routing, konsep wireless network, serta troubleshooting jaringan dasar.',
+                        image: 'assets/images/certificates/sertifikat_CCNA.jpeg'
+                    },
+                    {
+                        name: 'Sertifikat Kompetensi – Pengembang Web',
+                        issuer: 'Badan Nasional Sertifikasi Profesi (BNSP)',
+                        year: '2025',
+                        description: 'Sertifikasi kompetensi di bidang Software Development dengan kualifikasi sebagai Web Developer, mencakup pengembangan aplikasi web sesuai standar industri.',
+                        image: 'assets/images/certificates/sertifikat_bnsp_web.jpeg'
+                    }
+                ];
+                
+                // Save to localStorage
+                localStorage.setItem('skills', JSON.stringify(skills));
+                localStorage.setItem('experiences', JSON.stringify(experiences));
+                localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
+                localStorage.setItem('contactInfo', JSON.stringify(contactInfo));
+                localStorage.setItem('projects', JSON.stringify(projects));
+                localStorage.setItem('certificates', JSON.stringify(certificates));
+                localStorage.setItem('portfolioSetup', 'true');
+                
+                console.log('✅ Portfolio data initialized!');
+            }
+        })();
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
